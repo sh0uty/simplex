@@ -3,12 +3,17 @@ import re
 from collections import defaultdict
 
 re_comment1 = re.compile(r"(\/\*[\s\S]*\*\/)")
-re_comment2 = re.compile(r"(^\/\/.+$)")
+re_comment2 = re.compile(r"(^\/\/.*$)")
 
 def parse_data(data):
     data = _remove_comments(data)
     data = _remove_empty_lines(data)
-    data = _transpose(_parse_objective_function(data[0]), _parse_constraints(data[1:]))
+
+    objFunc = _parse_objective_function(data[0])
+    constraints = _parse_constraints(data[1:])
+
+    #data = _transpose(objFunc, constraints)
+    return constraints, objFunc
 
 
 def _remove_comments(data):
@@ -40,14 +45,14 @@ def _parse_objective_function(objective_function):
 
 def _parse_constraints(constraints):
     list_of_pairs = []
-    for constrain in constraints:
-        constrain, val = constrain.split('>=')
-        constrain = [line.strip() for line in constrain.split('+') if line.strip()]
-        constrain = [pair.split('*') for pair in constrain]
+    for constraint in constraints:
+        constraint, val = constraint.split('<=')
+        constraint = [line.strip() for line in constraint.split('+') if line.strip()]
+        constraint = [pair.split('*') for pair in constraint]
 
         pairs = defaultdict(int)
 
-        for pair in constrain:
+        for pair in constraint:
             pairs[pair[1]] = int(pair[0])
 
         pairs['val'] = int(val.replace(';', ''))

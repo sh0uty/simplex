@@ -1,7 +1,7 @@
 import argparse
 
 from parser import *
-
+from simplex import Simplex
 
 parser = argparse.ArgumentParser()
 
@@ -18,8 +18,8 @@ def main():
         print("File not found")
         exit(1)
     
-    data = parse_data(data)
-
+    constrains, objFunc = parse_data(data)
+    Simplex(objFunc, constrains).solve()
 
 if __name__ == '__main__':
     main()
