@@ -13,17 +13,19 @@ class Simplex:
         print()
 
     def solve(self):
-        win_codition = False
-        while not win_codition:
+        win_condition = False
+        while not win_condition:
             self._add_slack_variables()
             pivot_column_index, pivot_row_index = self._get_pivot_element()
             self._subtract_pivot_row_from_rows(pivot_column_index, pivot_row_index)
 
             win = []
             for key in self.objFunc:
-                if self.objFunc[key] > 0:
+                if self.objFunc[key] <= 0:
                     win.append(True)
-            win_codition = not any(win)
+                else:
+                    win.append(False)
+            win_condition = all(win)
 
         self.get_solution()
 
