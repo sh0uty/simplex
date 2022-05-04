@@ -19,7 +19,7 @@ def main():
         exit(1)
     
     constrains, objFunc = parse_data(data)
-    Simplex(objFunc, constrains).solve()
+    result = Simplex(objFunc, constrains).solve()
 
 if __name__ == '__main__':
     main()
