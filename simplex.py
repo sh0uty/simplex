@@ -5,19 +5,25 @@ class Simplex:
         self.objFunc = objFunc
         self.originalObjFunc = objFunc.copy()
         self.constraints = constraints
+        self.pretty_print()
 
     def pretty_print(self):
-        print(dict(self.objFunc))
         for constraint in self.constraints:
             print(dict(constraint))
-        print()
+        print("---------------------------------------------------")
+        print(dict(self.objFunc))
 
     def solve(self):
         win_condition = False
         while not win_condition:
             self._add_slack_variables()
             pivot_column_index, pivot_row_index = self._get_pivot_element()
+
+            print(f"Pivot: Column - {pivot_column_index}, Row - {pivot_row_index}")
+            print()
+
             self._subtract_pivot_row_from_rows(pivot_column_index, pivot_row_index)
+            self.pretty_print()
 
             win = []
             for key in self.objFunc:
@@ -75,6 +81,8 @@ class Simplex:
             for key in self.constraints[pivot_row_index]:
                 self.constraints[pivot_row_index][key] /= pivot_element
 
+        pivot_element = self.constraints[pivot_row_index][pivot_column_index]
+
         pivot_row = self.constraints[pivot_row_index]
         rows = self.constraints + [self.objFunc]
 
@@ -118,3 +126,5 @@ class Simplex:
                 print(f'{key}: {self.constraints[solution[key]]["val"]}')
             else:
                 print(f'{key}: 0')
+
+        print(solution )
