@@ -32,7 +32,8 @@ def _remove_empty_lines(data):
 
 
 def _parse_objective_function(objective_function):
-    objective_function = objective_function[4:]
+    
+    objective_function = objective_function[4:] #! Parse min and max differently
     objective_function = [line.strip().replace(';', '') for line in objective_function.split('+') if line.strip()]
     objective_function = [pair.split('*') for pair in objective_function]
     
@@ -60,17 +61,3 @@ def _parse_constraints(constraints):
         list_of_pairs.append(pairs)
     
     return list_of_pairs
-
-
-def _transpose(objective_function, constraints):
-    matrix = []
-
-    for constraint in constraints:
-        matrix.append(list(constraint.values()))
-    matrix.append(list(objective_function.values()) + ['z'])
-
-    print(matrix)
-
-    matrix = [[matrix[i][j] for i in range(len(matrix))] for j in range(len(matrix[0]))]
-
-    print(matrix)
