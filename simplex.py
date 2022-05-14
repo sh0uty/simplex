@@ -1,11 +1,13 @@
 from collections import defaultdict
 
 class Simplex:
-    def __init__(self, objFunc, constraints):
+    def __init__(self, objFunc, constraints, problem):
+        self.problem = problem
         self.objFunc = objFunc
         self.originalObjFunc = objFunc.copy()
         self.constraints = constraints
         self.pretty_print()
+        self.slack_variables = []
 
     def pretty_print(self):
         for constraint in self.constraints:
@@ -15,7 +17,8 @@ class Simplex:
 
     def solve(self):
         win_condition = False
-        while not win_condition:
+        count = 1
+        while not win_condition and count < 10:
             self._add_slack_variables()
             pivot_column_index, pivot_row_index = self._get_pivot_element()
 
@@ -32,7 +35,9 @@ class Simplex:
                 else:
                     win.append(False)
             win_condition = all(win)
+            count += 1
 
+        print(count)
         self.get_solution()
 
     """
@@ -41,6 +46,7 @@ class Simplex:
     def _add_slack_variables(self):
         for i in range(len(self.constraints)):
             self.constraints[i][f's{i+1}'] = 1
+            self.slack_variables.append(f's{i+1}')
 
     def _get_pivot_element(self):
         pivot_column_index = self._get_pivot_column_index()
@@ -53,9 +59,13 @@ class Simplex:
     """
     def _get_pivot_column_index(self):
         index = 0
-        values = list(self.objFunc.values())
+        objFunc_exclude_val = self.objFunc.copy()
+
+        objFunc_exclude_val['val'] = -1*float('inf')
+
+        values = list(objFunc_exclude_val.values())
         max_val = max(values)
-        return list(self.objFunc.keys())[values.index(max_val)]
+        return list(objFunc_exclude_val.keys())[values.index(max_val)]
 
     """
     Returning the index of the pivot row by calculating the minimum value of
@@ -121,10 +131,11 @@ class Simplex:
         print()
         print(f'Solution: {value}')
         print()
-        for key in self.originalObjFunc:
-            if key in solution:
-                print(f'{key}: {self.constraints[solution[key]]["val"]}')
-            else:
-                print(f'{key}: 0')
-
-        print(solution )
+        if self.problem == 'min':
+            pass
+        else:
+            for key in self.originalObjFunc:
+                if key in solution:
+                    print(f'{key}: {self.constraints[solution[key]]["val"]}')
+                else:
+                    print(f'{key}: 0')

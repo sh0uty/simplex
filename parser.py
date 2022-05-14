@@ -9,11 +9,12 @@ def parse_data(data):
     data = _remove_comments(data)
     data = _remove_empty_lines(data)
 
-    objFunc = _parse_objective_function(data[0])
-    constraints = _parse_constraints(data[1:])
+    problem, objFunc = _parse_objective_function(data[0])
+    constraints = _parse_constraints(data[1:], problem)
 
-    #data = _transpose(objFunc, constraints)
-    return constraints, objFunc
+    if problem.lower() == 'min':
+        objFunc, constraints = _transpose(objFunc, constraints)
+    return constraints, objFunc, problem
 
 
 def _remove_comments(data):
@@ -32,8 +33,7 @@ def _remove_empty_lines(data):
 
 
 def _parse_objective_function(objective_function):
-    
-    objective_function = objective_function[4:] #! Parse min and max differently
+    problem, objective_function = objective_function.split(':')
     objective_function = [line.strip().replace(';', '') for line in objective_function.split('+') if line.strip()]
     objective_function = [pair.split('*') for pair in objective_function]
     
@@ -42,12 +42,15 @@ def _parse_objective_function(objective_function):
     for pair in objective_function:
         pairs[pair[1]] = int(pair[0])
 
-    return pairs
+    return problem, pairs
 
-def _parse_constraints(constraints):
+def _parse_constraints(constraints, problem):
     list_of_pairs = []
     for constraint in constraints:
-        constraint, val = constraint.split('<=')
+        if problem.lower() == 'min':
+            constraint, val = constraint.split('>=')
+        else:
+            constraint, val = constraint.split('<=')
         constraint = [line.strip() for line in constraint.split('+') if line.strip()]
         constraint = [pair.split('*') for pair in constraint]
 
@@ -61,3 +64,33 @@ def _parse_constraints(constraints):
         list_of_pairs.append(pairs)
     
     return list_of_pairs
+
+
+def _transpose(objFunc, constraints):
+    all_variables = list(objFunc.keys()) + ['val']
+
+    matrix = constraints.copy()
+    matrix.append(objFunc)
+
+    transposed = []
+    for key in all_variables:
+        transposed.append([row[key] for row in matrix])
+
+    new_constraints_list = transposed[:-1]
+    new_objFunc_list = transposed[-1]
+
+    new_constraints = []
+    new_objFunc = defaultdict(int)
+
+    for row in new_constraints_list:
+        constraint = defaultdict(int)
+        for i in range(len(row) - 1):
+            constraint[f'yx{i}'] = row[i]
+        constraint['val'] = row[-1]
+        new_constraints.append(constraint)
+
+    for i in range(len(new_objFunc_list) - 1):
+        new_objFunc[f'yx{i}'] = new_objFunc_list[i]
+    new_objFunc['val'] = new_objFunc_list[-1]
+
+    return new_objFunc, new_constraints

@@ -18,8 +18,8 @@ def main():
         print("File not found")
         exit(1)
     
-    constrains, objFunc = parse_data(data)
-    result = Simplex(objFunc, constrains).solve()
+    constrains, objFunc, problem = parse_data(data)
+    result = Simplex(objFunc, constrains, problem).solve()
 
 if __name__ == '__main__':
     main()
