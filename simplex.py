@@ -18,8 +18,8 @@ class Simplex:
     def solve(self):
         win_condition = False
         count = 1
-        while not win_condition and count < 10:
-            self._add_slack_variables()
+        self._add_slack_variables()
+        while not win_condition:
             pivot_column_index, pivot_row_index = self._get_pivot_element()
 
             print(f"Pivot: Column - {pivot_column_index}, Row - {pivot_row_index}")
@@ -58,7 +58,6 @@ class Simplex:
     maximum value in the objective function
     """
     def _get_pivot_column_index(self):
-        index = 0
         objFunc_exclude_val = self.objFunc.copy()
 
         objFunc_exclude_val['val'] = -1*float('inf')
@@ -79,7 +78,11 @@ class Simplex:
             if pivot_column_values[i] == 0:
                 divisions.append(float('inf'))
             else:
-                divisions.append(self.constraints[i]['val'] / pivot_column_values[i])
+                divison = self.constraints[i]['val'] / pivot_column_values[i]
+                if divison <= 0:
+                    divisions.append(float('inf'))
+                else:
+                    divisions.append(self.constraints[i]['val'] / pivot_column_values[i])
 
         min_val = min(divisions)
         return divisions.index(min_val)
