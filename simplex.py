@@ -22,7 +22,7 @@ class Simplex:
         while not win_condition:
             pivot_column_index, pivot_row_index = self._get_pivot_element()
 
-            print(f"Pivot: Column - {pivot_column_index}, Row - {pivot_row_index}")
+            print(f"Pivot: Column - {pivot_column_index}, Row - {pivot_row_index} -> Pivot Element: {self.constraints[pivot_row_index][pivot_column_index]}")
             print()
 
             self._subtract_pivot_row_from_rows(pivot_column_index, pivot_row_index)
@@ -83,6 +83,8 @@ class Simplex:
                     divisions.append(float('inf'))
                 else:
                     divisions.append(self.constraints[i]['val'] / pivot_column_values[i])
+
+        print("Divisions: ", divisions)
 
         min_val = min(divisions)
         return divisions.index(min_val)
