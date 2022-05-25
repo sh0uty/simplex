@@ -68,7 +68,7 @@ def _parse_constraints(constraints, problem):
 
 def _transpose(objFunc, constraints):
     all_variables = list(objFunc.keys()) + ['val']
-
+    print(all_variables)
     matrix = constraints.copy()
     matrix.append(objFunc)
 
@@ -85,12 +85,14 @@ def _transpose(objFunc, constraints):
     for row in new_constraints_list:
         constraint = defaultdict(int)
         for i in range(len(row) - 1):
-            constraint[f'yx{i}'] = row[i]
+            #constraint[f'yx{i}'] = row[i]
+            constraint[f'y{all_variables[i]}'] = row[i]
         constraint['val'] = row[-1]
         new_constraints.append(constraint)
 
     for i in range(len(new_objFunc_list) - 1):
-        new_objFunc[f'yx{i}'] = new_objFunc_list[i]
+        #new_objFunc[f'yx{i}'] = new_objFunc_list[i]
+        new_objFunc[f'y{all_variables[i]}'] = new_objFunc_list[i]
     new_objFunc['val'] = new_objFunc_list[-1]
 
     return new_objFunc, new_constraints

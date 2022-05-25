@@ -150,7 +150,7 @@ class Simplex:
         print()
 
     def get_solution(self):
-        print("Found solution:")
+        print("Found optimal solution:")
 
         value = self.objFunc['val'] * -1
 
@@ -179,7 +179,7 @@ class Simplex:
         if self.problem == 'min':
             for slack in self.slack_variables:
                 if slack in self.objFunc:
-                    print(f'{slack}: {-1 * self.objFunc[slack]}')
+                    print(f'{slack.replace("s", "x")}: {-1 * self.objFunc[slack]}')
                 else:
                     print(f'{slack}: 0')
         else:
