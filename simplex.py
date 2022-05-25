@@ -12,7 +12,7 @@ class Simplex:
         try:
             _, self.columns = map(int, os.popen('stty size', 'r').read().split())
         except:
-            self.columns = 50
+            self.columns = 100
 
         print("Starting tableau: ")
         self.print_tabelau()
@@ -166,9 +166,7 @@ class Simplex:
             if key == 'val':
                 continue
 
-            column = []
-            for row in rows:
-                column.append(row[key])
+            column = [row[key] for row in rows]
             
             if sum(column) == 1 and set(column) == set([1,0]):
                 solution[key] = column.index(1)
@@ -179,7 +177,11 @@ class Simplex:
         if self.problem == 'min':
             for slack in self.slack_variables:
                 if slack in self.objFunc:
-                    print(f'{slack.replace("s", "x")}: {-1 * self.objFunc[slack]}')
+                    val = -1 * self.objFunc[slack]
+                    if val == 0:
+                        print(f'{slack.replace("s", "x")}: {0}')
+                    else:
+                        print(f'{slack.replace("s", "x")}: {val}')
                 else:
                     print(f'{slack}: 0')
         else:
