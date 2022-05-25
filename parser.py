@@ -68,7 +68,6 @@ def _parse_constraints(constraints, problem):
 
 def _transpose(objFunc, constraints):
     all_variables = list(objFunc.keys()) + ['val']
-    print(all_variables)
     matrix = constraints.copy()
     matrix.append(objFunc)
 
